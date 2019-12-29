@@ -1,6 +1,7 @@
 package io.github.iknityanand.zenservices.service;
 
 import io.github.iknityanand.zenservices.domain.Multiplication;
+import io.github.iknityanand.zenservices.domain.MultiplicationResultAttempt;
 
 public interface MultiplicationService {
 
@@ -11,4 +12,6 @@ public interface MultiplicationService {
     * @return a Multiplication object with random factors
     */
     Multiplication createRandomMultiplication();
+    
+    boolean checkAttempt(final MultiplicationResultAttempt resultAttempt);
 }

@@ -1,42 +1,33 @@
 package io.github.iknityanand.zenservices.domain;
 
+/**
+ * This class represents a Multiplication in our application.
+ */
 public class Multiplication {
 
-    // Both Factors
+    // Both factors
     private int factorA;
     private int factorB;
 
-    // The result of the operation A*B
+    // The result of the operation A * B
     private int result;
 
-    public Multiplication(int factorA, int factorB, int result) {
+    public Multiplication(int factorA, int factorB) {
         this.factorA = factorA;
         this.factorB = factorB;
-        this.result = result;
+        this.result = factorA * factorB;
     }
-
-    public int getFactorA() {
+    
+	public int getFactorA() {
         return factorA;
-    }
-
-    public void setFactorA(int factorA) {
-        this.factorA = factorA;
     }
 
     public int getFactorB() {
         return factorB;
     }
 
-    public void setFactorB(int factorB) {
-        this.factorB = factorB;
-    }
-
     public int getResult() {
         return result;
-    }
-
-    public void setResult(int result) {
-        this.result = result;
     }
 
     @Override
@@ -44,7 +35,38 @@ public class Multiplication {
         return "Multiplication{" +
                 "factorA=" + factorA +
                 ", factorB=" + factorB +
-                ", result=" + result +
+                ", result(A*B)=" + result +
                 '}';
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + factorA;
+		result = prime * result + factorB;
+		result = prime * result + this.result;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Multiplication other = (Multiplication) obj;
+		if (factorA != other.factorA)
+			return false;
+		if (factorB != other.factorB)
+			return false;
+		if (result != other.result)
+			return false;
+		return true;
+	}
+    
+    
+
 }
