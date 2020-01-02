@@ -12,7 +12,7 @@ public class MultiplicationServiceImlp implements MultiplicationService {
     private RandomGeneratorService randomGeneratorService;
 
     @Autowired
-    public MultiplicationServiceImlp(RandomGeneratorService randomGeneratorService){
+    public MultiplicationServiceImlp(final RandomGeneratorService randomGeneratorService){
         this.randomGeneratorService = randomGeneratorService;
     }
 
