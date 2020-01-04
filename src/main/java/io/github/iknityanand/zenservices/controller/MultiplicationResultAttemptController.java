@@ -1,9 +1,13 @@
 package io.github.iknityanand.zenservices.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.iknityanand.zenservices.domain.MultiplicationResultAttempt;
 import io.github.iknityanand.zenservices.service.MultiplicationService;
 
 @RestController
@@ -17,24 +21,14 @@ public final class MultiplicationResultAttemptController {
 		super();
 		this.multiplicationService = multiplicationService;
 	}
-
-	// Here we will implement our post later
-
-	static final class ResultResponse {
-		private final boolean correct;
-
-		public ResultResponse(boolean correct) {
-			this.correct = correct;
-		}
+	
+	@PostMapping
+	ResponseEntity<MultiplicationResultAttempt> postResult(@RequestBody MultiplicationResultAttempt attempt){
+boolean isCorrect = multiplicationService.checkAttempt(attempt);
+MultiplicationResultAttempt attemptCopy = new MultiplicationResultAttempt(attempt.getUser(), attempt.getMultiplication(), attempt.getResultAttempt(), isCorrect);
+		return ResponseEntity.ok(attemptCopy);
 		
-		public boolean isCorrect() {
-			return correct;
-		}
-
-		public ResultResponse() {
-			this.correct = false;
-			System.out.println("HEllo");
-			// TODO Auto-generated constructor stub
-		}		
+		
 	}
+
 }
