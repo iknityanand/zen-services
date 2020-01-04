@@ -28,51 +28,53 @@ import io.github.iknityanand.zenservices.service.MultiplicationService;
 @RunWith(SpringRunner.class)
 @WebMvcTest(MultiplicationResultAttemptControllerTest.class)
 public class MultiplicationResultAttemptControllerTest<ResultResponse> {
-	
+
 	@MockBean
 	private MultiplicationService multiplicationService;
-	
+
 	@Autowired
 	private MockMvc mvc;
-	
+
 	private JacksonTester<MultiplicationResultAttempt> jsonResult;
 	private JacksonTester<ResultResponse> jsonResponse;
 
-    @Before
-    public void setup() {
-        JacksonTester.initFields(this, new ObjectMapper());
-    }
+	@Before
+	public void setup() {
+		JacksonTester.initFields(this, new ObjectMapper());
+	}
 
-    @Test
-    public void postResultReturnCorrect() throws Exception {
-        genericParameterizedTest(true);
-    }
+	@Test
+	public void postResultReturnCorrect() throws Exception {
+		genericParameterizedTest(true);
+	}
 
-    @Test
-    public void postResultReturnNotCorrect() throws Exception {
-        genericParameterizedTest(false);
-    }
+	@Test
+	public void postResultReturnNotCorrect() throws Exception {
+		genericParameterizedTest(false);
+	}
 
-    void genericParameterizedTest(final boolean correct) throws Exception {
-        // given (remember we're not testing here the service itself)
-        given(multiplicationService
-                .checkAttempt(any(MultiplicationResultAttempt.class)))
-                .willReturn(correct);
-        User user = new User("john");
-        Multiplication multiplication = new Multiplication(50, 70);
-        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(
-                user, multiplication, 3500);
+	void genericParameterizedTest(final boolean correct) throws Exception {
+		// given (remember we're not testing here the service itself)
+		given(multiplicationService.checkAttempt(any(MultiplicationResultAttempt.class))).willReturn(correct);
+		User user = new User("john");
+		Multiplication multiplication = new Multiplication(50, 70);
+		MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3500, correct);
 
-        // when
-        MockHttpServletResponse response = mvc.perform(
-                post("/results").contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonResult.write(attempt).getJson()))
-                .andReturn().getResponse();
+		// when
+		MockHttpServletResponse response = mvc.perform(
+				post("/results").contentType(MediaType.APPLICATION_JSON).content(jsonResult.write(attempt).getJson()))
+				.andReturn().getResponse();
 
-        // then
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		// then
+		Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+		Assertions
+				.assertThat(
+						response.getContentAsString())
+				.isEqualTo(jsonResult.write(new MultiplicationResultAttempt(attempt.getUser(),
+						attempt.getMultiplication(), attempt.getResultAttempt(), correct)).getJson());
 //        Assertions.assertThat(response.getContentAsString()).isEqualTo(
 //                jsonResponse.write(new ResultResponse(correct)).getJson());
-    }
+	}
 
 }
