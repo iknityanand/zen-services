@@ -1,5 +1,7 @@
 package io.github.iknityanand.zenservices.service;
 
+import java.util.List;
+
 import io.github.iknityanand.zenservices.domain.Multiplication;
 import io.github.iknityanand.zenservices.domain.MultiplicationResultAttempt;
 
@@ -14,4 +16,6 @@ public interface MultiplicationService {
     Multiplication createRandomMultiplication();
     
     boolean checkAttempt(final MultiplicationResultAttempt resultAttempt);
+    
+    List<MultiplicationResultAttempt> getStatsForUser(String userAlias);
 }

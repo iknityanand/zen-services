@@ -1,6 +1,14 @@
 package io.github.iknityanand.zenservices.multiplication.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,10 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +39,8 @@ public class MultiplicationResultAttemptControllerTest<ResultResponse> {
 	@Autowired
 	private MockMvc mvc;
 
-	private JacksonTester<MultiplicationResultAttempt> jsonResult;
+	private JacksonTester<MultiplicationResultAttempt> jsonResultAttempt;
+	private JacksonTester<List<MultiplicationResultAttempt>> jsonResultAttemptList;
 	private JacksonTester<ResultResponse> jsonResponse;
 
 	@Before
@@ -61,9 +66,8 @@ public class MultiplicationResultAttemptControllerTest<ResultResponse> {
 		MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3500, correct);
 
 		// when
-		MockHttpServletResponse response = mvc.perform(
-				post("/results").contentType(MediaType.APPLICATION_JSON).content(jsonResult.write(attempt).getJson()))
-				.andReturn().getResponse();
+		MockHttpServletResponse response = mvc.perform(post("/results").contentType(MediaType.APPLICATION_JSON)
+				.content(jsonResultAttempt.write(attempt).getJson())).andReturn().getResponse();
 
 		// then
 		Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -71,10 +75,30 @@ public class MultiplicationResultAttemptControllerTest<ResultResponse> {
 		Assertions
 				.assertThat(
 						response.getContentAsString())
-				.isEqualTo(jsonResult.write(new MultiplicationResultAttempt(attempt.getUser(),
+				.isEqualTo(jsonResultAttempt.write(new MultiplicationResultAttempt(attempt.getUser(),
 						attempt.getMultiplication(), attempt.getResultAttempt(), correct)).getJson());
 //        Assertions.assertThat(response.getContentAsString()).isEqualTo(
 //                jsonResponse.write(new ResultResponse(correct)).getJson());
+	}
+
+	@Test
+	public void getUserStats() throws Exception {
+		// given
+		User user = new User("john_doe");
+		Multiplication multiplication = new Multiplication(50, 70);
+		MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3500, true);
+		List<MultiplicationResultAttempt> recentAttempts = Lists.newArrayList(attempt, attempt);
+
+		// given
+		given(multiplicationService.getStatsForUser("john_doe")).willReturn(recentAttempts);
+
+		// when
+		MockHttpServletResponse response = mvc.perform(get("/results").param("alias", "john_doe")).andReturn()
+				.getResponse();
+		// then 
+		Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Assertions.assertThat(response.getContentAsString()).isEqualTo(
+		 jsonResultAttemptList.write( recentAttempts ).getJson());
 	}
 
 }
